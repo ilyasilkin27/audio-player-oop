@@ -14,7 +14,6 @@
 - Vanilla JS (ES-модули), HTML, CSS
 - Классы и модули, без внешних UI-библиотек
 - DOM: только `createElement`, `appendChild`, `addEventListener` и т.п. — без `innerHTML`
-- Bun 1.x для локального статического сервера
 
 ---
 
@@ -75,7 +74,6 @@ audio-player-oop/
 Шаг 1. Скелет проекта
 - Создайте директории `src/`, `styles/`, `assets/`
 - Подготовьте `index.html` с корневым контейнером и модульным скриптом `src/main.js`
-- Настройте простой Bun-сервер `server.ts` для статики
 
 Шаг 2. Модели домена
 - `Track`: id, title, artist, url, duration (опционально)
