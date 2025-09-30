@@ -1,3 +1,4 @@
+// Импортируем необходимые классы: плейлист, трек, аудиоплеер, стратегии воспроизведения и рендерер UI
 import { Playlist } from './models/Playlist.js'
 import { Track } from './models/Track.js'
 import { AudioPlayer } from './core/AudioPlayer.js'
@@ -6,8 +7,10 @@ import { ShuffleStrategy } from './strategies/ShuffleStrategy.js'
 import { RepeatOneStrategy } from './strategies/RepeatOneStrategy.js'
 import { Renderer } from './ui/Renderer.js'
 
+// Ключ для хранения состояния плеера в localStorage
 const STORAGE_KEY = 'audio-player-oop:state'
 
+// Загружает сохранённое состояние плеера из localStorage (текущий трек, стратегия)
 function loadState() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || {}
@@ -16,10 +19,12 @@ function loadState() {
   }
 }
 
+// Сохраняет состояние плеера в localStorage
 function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
+// Возвращает экземпляр стратегии воспроизведения по её имени
 function strategyFromName(name) {
   switch (name) {
     case 'shuffle':
@@ -31,6 +36,7 @@ function strategyFromName(name) {
   }
 }
 
+// Демо-треки для плейлиста (можно заменить на свои)
 const demoTracks = [
   new Track({
     id: '1',
@@ -52,20 +58,26 @@ const demoTracks = [
   }),
 ]
 
+// Загружаем состояние (текущий трек, стратегия) из localStorage
 const state = loadState()
+// Создаём плейлист из демо-треков
 const playlist = new Playlist(demoTracks)
+// Если в состоянии был сохранён id текущего трека — устанавливаем его
 if (state.currentId) playlist.setCurrentById(state.currentId)
 
+// Создаём экземпляр аудиоплеера с плейлистом и стратегией воспроизведения
 const player = new AudioPlayer({
   playlist,
   strategy: strategyFromName(state.strategy),
 })
 
+// Подписываемся на событие смены трека — сохраняем id текущего трека и стратегию в localStorage
 player.addEventListener('trackchange', (e) => {
   const { track } = e.detail
   saveState({ ...state, currentId: track.id, strategy: player.strategy.name })
 })
 
+// Подписываемся на событие смены стратегии — сохраняем стратегию и текущий трек в localStorage
 player.addEventListener('strategychange', () => {
   saveState({
     ...state,
@@ -74,9 +86,12 @@ player.addEventListener('strategychange', () => {
   })
 })
 
+// Получаем корневой DOM-элемент для плеера
 const root = document.getElementById('app')
+// Создаём UI-рендерер, который отрисует плеер и привяжет обработчики
 new Renderer(root, player)
 
+// Глобальный обработчик кликов по кнопкам стратегий (Sequential, Shuffle, Repeat One)
 document.addEventListener('click', (ev) => {
   const target = ev.target
   if (!(target instanceof HTMLButtonElement)) return
